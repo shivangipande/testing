@@ -43,7 +43,7 @@
       
       const size = new THREE.Vector3();
       geometry.boundingBox.getSize(size);
-      camera.position.z = Math.max(size.x, size.y, size.z) * 2;
+      camera.position.set(0, size.y * 1.5, size.z * 2);
     });
     
     function animate() {
