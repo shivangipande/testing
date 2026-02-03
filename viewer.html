@@ -44,7 +44,9 @@
       
       const size = new THREE.Vector3();
       geometry.boundingBox.getSize(size);
-      camera.position.z = Math.max(size.x, size.y, size.z) * 2;
+      mesh.rotation.x = -Math.PI / 2;
+      camera.position.set(0, 0, Math.max(size.x, size.y, size.z) * 3);
+      camera.lookAt(0, 0, 0);
     });
     
     function animate() {
