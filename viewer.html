@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mirror Frame</title>
+  <style>
+    body { margin: 0; background: #111; }
+    #viewer { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="viewer"></div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <script>
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111111);
+    
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('viewer').appendChild(renderer.domElement);
+    
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const light = new THREE.DirectionalLight(0xffffff, 0.8);
+    light.position.set(1, 1, 1);
+    scene.add(light);
+    
+    // Load STL from same folder
+    new THREE.STLLoader().load('mirror-frame.stl', function(geometry) {
+      geometry.center();
+      geometry.computeBoundingBox();
+      
+      const material = new THREE.MeshPhongMaterial({ color: 0xaaaaaa, shininess: 30 });
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+      
+      const size = new THREE.Vector3();
+      geometry.boundingBox.getSize(size);
+      camera.position.z = Math.max(size.x, size.y, size.z) * 2;
+    });
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
