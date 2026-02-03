@@ -28,25 +28,30 @@
     controls.enableDamping = true;
     
     scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    mesh.rotation.x = -Math.PI / 2;
     const light = new THREE.DirectionalLight(0xffffff, 0.8);
     light.position.set(1, 1, 1);
     scene.add(light);
     
-    // Load STL from same folder
     new THREE.STLLoader().load('mirror-frame.stl', function(geometry) {
       geometry.center();
       geometry.computeBoundingBox();
       
       const material = new THREE.MeshPhongMaterial({ color: 0xaaaaaa, shininess: 30 });
       const mesh = new THREE.Mesh(geometry, material);
+      
+      // Rotate to front view
+      mesh.rotation.x = -Math.PI / 2;
+      
       scene.add(mesh);
       
       const size = new THREE.Vector3();
       geometry.boundingBox.getSize(size);
-      mesh.rotation.x = -Math.PI / 2;
-      camera.position.set(0, 0, Math.max(size.x, size.y, size.z) * 3);
-      camera.lookAt(0, 0, 0);
+      
+      // Camera in front
+      const maxSize = Math.max(size.x, size.y, size.z);
+      camera.position.set(0, 0, maxSize * 2.5);
+      controls.target.set(0, 0, 0);
+      controls.update();
     });
     
     function animate() {
